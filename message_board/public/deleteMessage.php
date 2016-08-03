@@ -1,10 +1,10 @@
 <?php
 
-require 'Database.php';
+require __DIR__ . '/../bootstrap.php';
 
-$db = new Database;
-
-$db->delete('messages', $_GET['id']);
+$message = $entityManager->find(\App\Entity\Message::class, $_GET['id']);
+$entityManager->remove($message);
+$entityManager->flush();
 
 // Redirect back to index
 header('Location: /');

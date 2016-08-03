@@ -1,8 +1,9 @@
 <?php
 
-require 'Database.php';
+require __DIR__ . '/../bootstrap.php';
 
-$db = new Database;
+$repo = $entityManager->getRepository(\App\Entity\Message::class);
+$messages = $repo->findAll();
 
 ?>
 <!DOCTYPE html>
@@ -29,11 +30,11 @@ $db = new Database;
     </form>
 
     <h1>Messages</h1>
-    <?php foreach ($db->selectAll('messages') as $msg): ?>
+    <?php foreach ($messages as $msg): ?>
         <p>
-            <?= $msg['display_name'] ?>: <?= $msg['msg'] ?>
-            <a href="/?id=<?= $msg['id'] ?>&display_name=<?= $msg['display_name'] ?>&msg=<?= $msg['msg'] ?>">Edit</a>
-            <a href="deleteMessage.php?id=<?= $msg['id'] ?>">Delete</a>
+            <?= $msg->getDisplayName() ?>: <?= $msg->getMsg() ?>
+            <a href="/?id=<?= $msg->getId() ?>&display_name=<?= $msg->getDisplayName() ?>&msg=<?= $msg->getMsg() ?>">Edit</a>
+            <a href="deleteMessage.php?id=<?= $msg->getId() ?>">Delete</a>
         </p>
     <?php endforeach ?>
 </body>

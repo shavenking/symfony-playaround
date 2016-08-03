@@ -1,13 +1,13 @@
 <?php
 
-require 'Database.php';
+require __DIR__ . '/../bootstrap.php';
 
-$db = new Database;
+$message = new \App\Entity\Message;
+$message->setDisplayName($_POST['display_name']);
+$message->setMsg($_POST['msg']);
 
-$db->insertTo('messages', [
-    'display_name' => $_POST['display_name'],
-    'msg' => $_POST['msg']
-]);
+$entityManager->persist($message);
+$entityManager->flush();
 
 // Redirect back to index
 header('Location: /');
