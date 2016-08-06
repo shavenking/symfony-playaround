@@ -1,0 +1,27 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}Message Board{% endblock %}
+
+{% block body %}
+    <h1>Message Board</h1>
+
+    <h3>Messages</h3>
+    {% include 'AppBundle:Message:list.html.twig' with {'messages': messages} only %}
+
+    {# Message Form #}
+    {% set formTitle = 'Add New Message' %}
+
+    {% if message is defined %}
+        {% set formTitle = 'Update Message' %}
+    {% endif %}
+
+    <h3>{{ formTitle }}</h3>
+
+    {% if message is not defined %}
+        {% include 'AppBundle:Message:form.html.twig' only %}
+    {% endif %}
+
+    {% if message is defined %}
+        {% include 'AppBundle:Message:form.html.twig' with {'message': message} only %}
+    {% endif %}
+{% endblock %}

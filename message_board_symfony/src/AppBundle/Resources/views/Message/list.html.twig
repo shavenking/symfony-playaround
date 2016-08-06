@@ -1,0 +1,11 @@
+{% for message in messages %}
+    <p>
+        {{ message.getDisplayName() }}: {{ message.getBody() }}
+        <span>
+            <a href="{{ path('messages.edit', {'messageId': message.getId()}) }}">Edit</a>
+        </span>
+        <span>
+            <a href="{{ path('messages.delete', {'messageId': message.getId()}) }}">Delete</a>
+        </span>
+    </p>
+{% endfor %}

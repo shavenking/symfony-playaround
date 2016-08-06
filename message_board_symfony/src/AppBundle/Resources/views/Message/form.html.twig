@@ -1,0 +1,28 @@
+{# defualt form #}
+{% set actionPath = path('messages.store') %}
+{% set methodField = '' %}
+{% set defaultDisplayName = '' %}
+{% set defaultBody = '' %}
+
+{% if message is defined and message.getId() is not empty %}
+    {% set actionPath = path('messages.update', {'messageId': message.getId()}) %}
+    {% set methodField = '<input type="hidden" name="_method" value="PUT">' %}
+    {% set defaultDisplayName = message.getDisplayName() %}
+    {% set defaultBody = message.getBody() %}
+{% endif %}
+
+<form action="{{ actionPath }}" method="POST">
+    {{ methodField | raw }}
+
+    <label>
+        Name
+        <input type="text" name="display_name" value="{{ defaultDisplayName }}">
+    </label>
+
+    <label>
+        Message
+        <input type="text" name="body" value="{{ defaultBody }}">
+    </label>
+
+    <button type="submit">Submit</button>
+</form>
