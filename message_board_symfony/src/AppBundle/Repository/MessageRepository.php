@@ -17,13 +17,11 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
     public function find($entityId)
     {
         $em = $this->getEntityManager();
+        $entity = Message::class;
 
-        $rsm = new ResultSetMappingBuilder($em);
-        $rsm->addRootEntityFromClassMetadata(Message::class, 'm');
-
-        // create native query
-        $sql   = 'SELECT m.* FROM messages m WHERE m.id = :id';
-        $query = $em->createNativeQuery($sql, $rsm);
+        // create query
+        $dql   = "SELECT m FROM $entity m WHERE m.id = :id";
+        $query = $em->createQuery($dql);
 
         // set parameter
         $query->setParameter('id', $entityId);
@@ -33,14 +31,12 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 
     public function findAllTopLevel()
     {
-        $em = $this->getEntityManager();
+        $em     = $this->getEntityManager();
+        $entity = Message::class;
 
-        $rsm = new ResultSetMappingBuilder($em);
-        $rsm->addRootEntityFromClassMetadata(Message::class, 'm');
-
-        // create native query
-        $sql   = 'SELECT m.* FROM messages m WHERE m.parent_id IS NULL';
-        $query = $em->createNativeQuery($sql, $rsm);
+        // create query
+        $dql   = "SELECT m FROM $entity m WHERE m.parentId IS NULL";
+        $query = $em->createQuery($dql);
 
         return $query->getResult();
     }
