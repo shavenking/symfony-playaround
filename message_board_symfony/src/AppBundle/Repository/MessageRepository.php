@@ -19,12 +19,14 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         $em = $this->getEntityManager();
         $entity = Message::class;
 
-        // create query
-        $dql   = "SELECT m FROM $entity m WHERE m.id = :id";
-        $query = $em->createQuery($dql);
+        $qb = $em->createQueryBuilder();
 
-        // set parameter
-        $query->setParameter('id', $entityId);
+        // create query
+        $query = $qb->select('m')
+            ->from($entity, 'm')
+            ->where($qb->expr()->eq('m.id', ':id'))
+            ->setParameter('id', $entityId)
+            ->getQuery();
 
         return $query->getSingleResult();
     }
@@ -34,9 +36,13 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         $em     = $this->getEntityManager();
         $entity = Message::class;
 
+        $qb = $em->createQueryBuilder();
+
         // create query
-        $dql   = "SELECT m FROM $entity m WHERE m.parentId IS NULL";
-        $query = $em->createQuery($dql);
+        $query = $qb->select('m')
+            ->from($entity, 'm')
+            ->where($qb->expr()->isNull('m.parentId'))
+            ->getQuery();
 
         return $query->getResult();
     }
