@@ -2,6 +2,10 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Message;
+
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
+
 /**
  * MessageRepository
  *
@@ -10,10 +14,34 @@ namespace AppBundle\Repository;
  */
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function find($entityId)
+    {
+        $em = $this->getEntityManager();
+
+        $rsm = new ResultSetMappingBuilder($em);
+        $rsm->addRootEntityFromClassMetadata(Message::class, 'm');
+
+        // create native query
+        $sql   = 'SELECT m.* FROM messages m WHERE m.id = :id';
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        // set parameter
+        $query->setParameter('id', $entityId);
+
+        return $query->getSingleResult();
+    }
+
     public function findAllTopLevel()
     {
-        return $this->findBy([
-            'parentId' => null
-        ]);
+        $em = $this->getEntityManager();
+
+        $rsm = new ResultSetMappingBuilder($em);
+        $rsm->addRootEntityFromClassMetadata(Message::class, 'm');
+
+        // create native query
+        $sql   = 'SELECT m.* FROM messages m WHERE m.parent_id IS NULL';
+        $query = $em->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
     }
 }
