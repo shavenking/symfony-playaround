@@ -1,5 +1,7 @@
 {% extends "::base.html.twig" %}
 
+{% set pathInfo = app.getRequest().getPathInfo() %}
+
 {% block title %}Message Board{% endblock %}
 
 {% block body %}
@@ -8,14 +10,21 @@
     <h3>Messages</h3>
     {% include 'AppBundle:Message:list.html.twig' with {'messages': messages} only %}
 
-    {# Message Form #}
+    {# form #}
     {% set formTitle = 'Add New Message' %}
 
-    {% if message is defined %}
+    {% if pathInfo ends with 'edit' %}
         {% set formTitle = 'Update Message' %}
     {% endif %}
 
+    {% if pathInfo ends with 'reply' %}
+        {% set formTitle = "Reply To" %}
+    {% endif %}
+
     <h3>{{ formTitle }}</h3>
+    {% if pathInfo ends with 'reply' %}
+        <p>{{ message.getDisplayName() }}: {{ message.getBody() }}</p>
+    {% endif %}
 
     {% if message is not defined %}
         {% include 'AppBundle:Message:form.html.twig' only %}

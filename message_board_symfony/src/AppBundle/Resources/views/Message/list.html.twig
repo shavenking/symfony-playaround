@@ -1,11 +1,23 @@
+<ul>
 {% for message in messages %}
-    <p>
-        {{ message.getDisplayName() }}: {{ message.getBody() }}
-        <span>
-            <a href="{{ path('messages.edit', {'messageId': message.getId()}) }}">Edit</a>
-        </span>
-        <span>
-            <a href="{{ path('messages.delete', {'messageId': message.getId()}) }}">Delete</a>
-        </span>
-    </p>
+    <li>
+        <p>
+            {{ message.getDisplayName() }}: {{ message.getBody() }}
+            <span>
+                <a href="{{ path('messages.reply', {'messageId': message.getId()}) }}">Reply</a>
+            </span>
+            <span>
+                <a href="{{ path('messages.edit', {'messageId': message.getId()}) }}">Edit</a>
+            </span>
+            <span>
+                <a href="{{ path('messages.delete', {'messageId': message.getId()}) }}">Delete</a>
+            </span>
+        </p>
+
+        {# Replies #}
+        {% if message.getChildren() is not empty %}
+            {% include 'AppBundle:Message:list.html.twig' with {'messages': message.getChildren() } only %}
+        {% endif %}
+    </li>
 {% endfor %}
+</ul>

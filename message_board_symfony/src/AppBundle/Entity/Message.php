@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -35,6 +36,33 @@ class Message
      */
     private $body;
 
+    /**
+     * @ORM\Column(
+     *     name="parent_id",
+     *     type="integer",
+     *     nullable=true
+     * )
+     */
+    private $parentId;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="Message",
+     *     mappedBy="parent",
+     *     cascade={"remove"}
+     * )
+     */
+    private $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Message", inversedBy="children")
+     */
+    private $parent;
+
+    public function __construct()
+    {
+        $this->replies = new ArrayCollection;
+    }
 
     /**
      * Get id
@@ -92,6 +120,26 @@ class Message
     public function getBody()
     {
         return $this->body;
+    }
+
+    public function setParent(Message $message)
+    {
+        $this->parent = $message;
+    }
+
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    public function addChildren(Message $message)
+    {
+        $this->children->add($message);
+    }
+
+    public function getChildren()
+    {
+        return $this->children;
     }
 }
 

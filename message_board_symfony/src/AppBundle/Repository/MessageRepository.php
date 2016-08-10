@@ -10,4 +10,10 @@ namespace AppBundle\Repository;
  */
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findAllTopLevel()
+    {
+        return $this->findBy([
+            'parentId' => null
+        ]);
+    }
 }

@@ -11,20 +11,21 @@ class MessageController extends Controller
 {
     /**
      * @Route("/messages", name="messages.index", methods={"GET"})
-     * @Route("/messages/{messageId}", name="messages.edit", methods={"GET"})
+     * @Route("/messages/{messageId}/edit", name="messages.edit", methods={"GET"})
+     * @Route("/messages/{messageId}/reply", name="messages.reply", methods={"GET"})
      */
     public function indexAction($messageId = null)
     {
         $em         = $this->getDoctrine()->getManager();
         $repository = $em->getRepository(Message::class);
 
-        // user is editing message
+        // user is editing or replying message
         if (!is_null($messageId)) {
             $message = $repository->find($messageId);
         }
 
-        // always get all messages to show on index page
-        $messages = $repository->findAll();
+        // select top level Messages
+        $messages = $repository->findAllTopLevel();
 
         // render
         $viewPath = 'AppBundle:Message:index.html.twig';
@@ -91,10 +92,19 @@ class MessageController extends Controller
         // get data from Request
         $displayName = $request->get('display_name');
         $msgBody     = $request->get('body');
+        $parentId    = $request->get('parent_id');
 
         // set Message data
         $message->setDisplayName($displayName);
         $message->setBody($msgBody);
+
+        // set parent if provided
+        if (!is_null($parentId)) {
+            $em     = $this->getDoctrine()->getManager();
+            $parent = $em->getRepository(Message::class)->find($parentId);
+
+            $message->setParent($parent);
+        }
 
         return $message;
     }

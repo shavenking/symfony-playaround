@@ -1,18 +1,26 @@
+{% set pathInfo = app.getRequest().getPathInfo() %}
+
 {# defualt form #}
 {% set actionPath = path('messages.store') %}
 {% set methodField = '' %}
 {% set defaultDisplayName = '' %}
 {% set defaultBody = '' %}
 
-{% if message is defined and message.getId() is not empty %}
+{% if pathInfo ends with 'edit' %}
     {% set actionPath = path('messages.update', {'messageId': message.getId()}) %}
-    {% set methodField = '<input type="hidden" name="_method" value="PUT">' %}
     {% set defaultDisplayName = message.getDisplayName() %}
     {% set defaultBody = message.getBody() %}
 {% endif %}
 
+
 <form action="{{ actionPath }}" method="POST">
-    {{ methodField | raw }}
+    {% if pathInfo ends with 'edit' %}
+        <input type="hidden" name="_method" value="PUT">
+    {% endif %}
+
+    {% if pathInfo ends with 'reply' %}
+        <input type="hidden" name="parent_id" value="{{ message.getId() }}">
+    {% endif %}
 
     <label>
         Name
