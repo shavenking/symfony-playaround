@@ -16,9 +16,9 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
     public function find($entityId)
     {
-        $em = $this->getEntityManager();
         $entity = Message::class;
 
+        $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
 
         // create query
@@ -33,9 +33,9 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 
     public function findAllTopLevel()
     {
-        $em     = $this->getEntityManager();
         $entity = Message::class;
 
+        $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
 
         // create query
