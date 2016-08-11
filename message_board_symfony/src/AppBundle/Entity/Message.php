@@ -59,9 +59,15 @@ class Message
      */
     private $parent;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="Tag", inversedBy="messages")
+     */
+    private $tags;
+
     public function __construct()
     {
         $this->replies = new ArrayCollection;
+        $this->tags    = new ArrayCollection;
     }
 
     /**
@@ -140,6 +146,16 @@ class Message
     public function getChildren()
     {
         return $this->children;
+    }
+
+    public function addTag(Tag $tag)
+    {
+        $this->tags->add($tag);
+    }
+
+    public function getTags()
+    {
+        return $this->tags;
     }
 }
 
