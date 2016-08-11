@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Tag;
+
 /**
  * TagRepository
  *
@@ -10,4 +12,16 @@ namespace AppBundle\Repository;
  */
 class TagRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findAll()
+    {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+
+        // create query
+        $query = $qb->select('t')
+            ->from(Tag::class, 't')
+            ->getQuery();
+
+        return $query->getResult();
+    }
 }
