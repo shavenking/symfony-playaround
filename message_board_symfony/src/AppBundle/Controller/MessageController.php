@@ -2,10 +2,12 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Message;
+use AppBundle\Event\MessageRepliedEvent;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Entity\Message;
 
 class MessageController extends Controller
 {
@@ -47,6 +49,16 @@ class MessageController extends Controller
         // create new Message
         $em->persist($message);
         $em->flush();
+
+        // user is replying another message
+        if (!is_null($message->getParent())) {
+            $parent     = $message->getParent();
+            $child      = $message;
+            $event      = new MessageRepliedEvent($parent, $child);
+            $dispatcher = $this->get('event_dispatcher');
+
+            $dispatcher->dispatch('app.message_replied', $event);
+        }
 
         return $this->redirectToRoute('messages.index');
     }
