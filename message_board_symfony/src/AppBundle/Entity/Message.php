@@ -64,8 +64,11 @@ class Message
      */
     private $tags;
 
-    public function __construct()
+    public function __construct($displayName = null, $body = null)
     {
+        $this->setDisplayName($displayName);
+        $this->setBody($body);
+
         $this->replies = new ArrayCollection;
         $this->tags    = new ArrayCollection;
     }
