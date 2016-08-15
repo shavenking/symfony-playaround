@@ -22,6 +22,19 @@ class MessageControllerTest extends TestCase
 
     public function testReplyMessage()
     {
+        // create mocked logger
+        $logger = $this->client->getContainer()->get('logger');
+        $mockedLogger = $this->getMockBuilder(get_class($logger))
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        // expect logger#info to be called once
+        $mockedLogger->expects($this->once())
+            ->method('info');
+
+        // replace logger with mocked one
+        $this->client->getContainer()->set('logger', $mockedLogger);
+
         // prepare top level message in database
         $message = $this->createRandomMessage();
 
