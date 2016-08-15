@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AssertTrait;
+namespace AppBundle\AssertTrait;
 
 trait DatabaseAssertTrait
 {

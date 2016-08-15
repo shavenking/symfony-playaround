@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\Message;
-use Tests\TestCase;
+use AppBundle\Test\TestCase;
 
 class MessageControllerTest extends TestCase
 {

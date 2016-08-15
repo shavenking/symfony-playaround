@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests;
+namespace AppBundle\Test;
 
-use Tests\AssertTrait\DatabaseAssertTrait;
-use Tests\AssertTrait\ResponseAssertTrait;
+use AppBundle\AssertTrait\DatabaseAssertTrait;
+use AppBundle\AssertTrait\ResponseAssertTrait;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

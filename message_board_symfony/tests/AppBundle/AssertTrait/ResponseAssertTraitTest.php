@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\AssertTrait;
+namespace Tests\AppBundle\AssertTrait;
 
-use Tests\TestCase;
+use AppBundle\Test\TestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 class ResponseAssertTraitTest extends TestCase

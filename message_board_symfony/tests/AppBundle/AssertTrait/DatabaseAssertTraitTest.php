@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\AssertTrait;
+namespace Tests\AppBundle\AssertTrait;
 
 use AppBundle\Entity\Message;
-use Tests\TestCase;
+use AppBundle\Test\TestCase;
 
 use Doctrine\ORM\EntityManager;
 
