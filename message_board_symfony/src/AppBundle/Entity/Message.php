@@ -71,6 +71,7 @@ class Message
 
         $this->replies = new ArrayCollection;
         $this->tags    = new ArrayCollection;
+        $this->children = new ArrayCollection;
     }
 
     /**
