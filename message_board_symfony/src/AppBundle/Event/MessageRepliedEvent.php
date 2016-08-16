@@ -14,8 +14,8 @@ class MessageRepliedEvent extends Event
 
     public function __construct(Message $parent, Message $child)
     {
-        $this->parent = $parent;
-        $this->child  = $child;
+        $this->setParent($parent);
+        $this->setChild($child);
     }
 
     public function setParent(Message $message)
