@@ -18,8 +18,8 @@ class MessageController extends Controller
      */
     public function indexAction($messageId = null)
     {
-        $em         = $this->getDoctrine()->getManager();
-        $repository = $em->getRepository(Message::class);
+        $em = $this->getDoctrine()->getManager();
+        $repository = $em->getRepository('AppBundle:Message');
 
         // user is editing or replying message
         if (!is_null($messageId)) {
@@ -41,7 +41,7 @@ class MessageController extends Controller
      */
     public function storeAction(Request $request)
     {
-        $em      = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $message = new Message;
 
         $this->fillMessageWithRequest($message, $request);
@@ -52,9 +52,9 @@ class MessageController extends Controller
 
         // user is replying another message
         if (!is_null($message->getParent())) {
-            $parent     = $message->getParent();
-            $child      = $message;
-            $event      = new MessageRepliedEvent($parent, $child);
+            $parent = $message->getParent();
+            $child = $message;
+            $event = new MessageRepliedEvent($parent, $child);
             $dispatcher = $this->get('event_dispatcher');
 
             $dispatcher->dispatch('app.message_replied', $event);
@@ -68,8 +68,8 @@ class MessageController extends Controller
      */
     public function updateAction($messageId, Request $request)
     {
-        $em      = $this->getDoctrine()->getManager();
-        $message = $em->getRepository(Message::class)->find($messageId);
+        $em = $this->getDoctrine()->getManager();
+        $message = $em->getRepository('AppBundle:Message')->find($messageId);
 
         $this->fillMessageWithRequest($message, $request);
 
@@ -84,8 +84,8 @@ class MessageController extends Controller
      */
     public function deleteAction($messageId)
     {
-        $em      = $this->getDoctrine()->getManager();
-        $message = $em->getRepository(Message::class)->find($messageId);
+        $em = $this->getDoctrine()->getManager();
+        $message = $em->getRepository('AppBundle:Message')->find($messageId);
 
         // delete existing Message
         $em->remove($message);
@@ -103,8 +103,8 @@ class MessageController extends Controller
     ) {
         // get data from Request
         $displayName = $request->get('display_name');
-        $msgBody     = $request->get('body');
-        $parentId    = $request->get('parent_id');
+        $msgBody = $request->get('body');
+        $parentId = $request->get('parent_id');
 
         // set Message data
         $message->setDisplayName($displayName);
@@ -112,8 +112,8 @@ class MessageController extends Controller
 
         // set parent if provided
         if (!is_null($parentId)) {
-            $em     = $this->getDoctrine()->getManager();
-            $parent = $em->getRepository(Message::class)->find($parentId);
+            $em = $this->getDoctrine()->getManager();
+            $parent = $em->getRepository('AppBundle:Message')->find($parentId);
 
             $message->setParent($parent);
         }

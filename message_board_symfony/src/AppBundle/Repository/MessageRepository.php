@@ -2,8 +2,6 @@
 
 namespace AppBundle\Repository;
 
-use AppBundle\Entity\Message;
-
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
@@ -16,14 +14,12 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
     public function find($entityId)
     {
-        $entity = Message::class;
-
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
 
         // create query
         $query = $qb->select('m')
-            ->from($entity, 'm')
+            ->from('AppBundle:Message', 'm')
             ->where($qb->expr()->eq('m.id', ':id'))
             ->setParameter('id', $entityId)
             ->getQuery();
@@ -33,14 +29,12 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 
     public function findAllTopLevel()
     {
-        $entity = Message::class;
-
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
 
         // create query
         $query = $qb->select('m')
-            ->from($entity, 'm')
+            ->from('AppBundle:Message', 'm')
             ->where($qb->expr()->isNull('m.parentId'))
             ->getQuery();
 

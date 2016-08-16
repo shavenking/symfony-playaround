@@ -20,7 +20,7 @@ class MessageRepliedListener
     public function onMessageReplied(MessageRepliedEvent $event)
     {
         $parent = $event->getParent();
-        $child  = $event->getChild();
+        $child = $event->getChild();
 
         $this->logger->info(
             "{$parent->getId()} is replied by {$child->getId()}"

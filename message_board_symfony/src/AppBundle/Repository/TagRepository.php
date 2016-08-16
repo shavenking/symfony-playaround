@@ -2,8 +2,6 @@
 
 namespace AppBundle\Repository;
 
-use AppBundle\Entity\Tag;
-
 /**
  * TagRepository
  *
@@ -19,7 +17,7 @@ class TagRepository extends \Doctrine\ORM\EntityRepository
 
         // create query
         $query = $qb->select('t')
-            ->from(Tag::class, 't')
+            ->from('AppBundle:Tag', 't')
             ->getQuery();
 
         return $query->getResult();

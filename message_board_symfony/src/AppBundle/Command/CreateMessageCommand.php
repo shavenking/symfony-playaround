@@ -40,7 +40,7 @@ class CreateMessageCommand extends ContainerAwareCommand
     {
         // get arguments
         $displayName = $input->getArgument('displayName');
-        $msgBody     = $input->getArgument('msgBody');
+        $msgBody = $input->getArgument('msgBody');
 
         // set Message
         $message = new Message;

@@ -2,7 +2,6 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Entity\Message;
 use AppBundle\Entity\Tag;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -15,35 +14,33 @@ class MessagesAddTagCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
-        $this
-            ->setName('app:messages:add-tag')
-            ->setDescription('Add Tag to Message.')
-        ;
+        $this->setName('app:messages:add-tag')
+            ->setDescription('Add Tag to Message.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getHelper('question');
-        $em     = $this->getContainer()->get('doctrine')->getManager();
+        $em = $this->getContainer()->get('doctrine')->getManager();
 
         // get Question
-        $messages        = $em->getRepository(Message::class)->findAll();
+        $messages = $em->getRepository('AppBundle:Message')->findAll();
         $messageQuestion = new Question(
             $this->getMessageQuestionStr($messages)
         );
 
-        $tags = $em->getRepository(Tag::class)->findAll();
+        $tags = $em->getRepository('AppBundle:Tag')->findAll();
         $tagQuestion = new Question(
             $this->getTagQuestionStr($tags)
         );
 
         // ask Question
-        $messageId         = $helper->ask($input, $output, $messageQuestion);
+        $messageId = $helper->ask($input, $output, $messageQuestion);
         $tagIdOrNewTagName = $helper->ask($input, $output, $tagQuestion);
 
         // try to get entity from user input
-        $message = $em->getRepository(Message::class)->find($messageId);
-        $tag     = $em->getRepository(Tag::class)->find($tagIdOrNewTagName);
+        $message = $em->getRepository('AppBundle:Message')->find($messageId);
+        $tag = $em->getRepository('AppBundle:Tag')->find($tagIdOrNewTagName);
 
         // create Tag if not exists
         if (is_null($tag)) {
@@ -69,9 +66,9 @@ class MessagesAddTagCommand extends ContainerAwareCommand
     {
         $questionStr = "Which Message are you going to add Tag on?\n\n";
         foreach ($messages as $message) {
-            $messageId   = $message->getId();
+            $messageId = $message->getId();
             $displayName = $message->getDisplayName();
-            $body        = $message->getBody();
+            $body = $message->getBody();
 
             $questionStr .= "[$messageId] $displayName: $body\n";
         }
@@ -84,7 +81,7 @@ class MessagesAddTagCommand extends ContainerAwareCommand
     {
         $questionStr = "What Tag are you going to add on Message (or just type a new tag name)?\n\n";
         foreach ($tags as $tag) {
-            $tagId   = $tag->getId();
+            $tagId = $tag->getId();
             $tagName = $tag->getName();
 
             $questionStr .= "[$tagId] $tagName\n";

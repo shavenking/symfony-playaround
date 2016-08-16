@@ -70,7 +70,7 @@ class Message
         $this->setBody($body);
 
         $this->replies = new ArrayCollection;
-        $this->tags    = new ArrayCollection;
+        $this->tags = new ArrayCollection;
         $this->children = new ArrayCollection;
     }
 
