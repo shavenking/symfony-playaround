@@ -112,21 +112,6 @@ class MessageControllerTest extends TestCase
         $this->assertStatusOk();
     }
 
-    protected function createRandomMessage($immediatelyPersist = true)
-    {
-        // create new message with random data
-        $name = 'test_name_' . rand();
-        $body = 'test_body_' . rand();
-        $message = new Message($name, $body);
-
-        if ($immediatelyPersist) {
-            $this->em->persist($message);
-            $this->em->flush();
-        }
-
-        return $message;
-    }
-
     protected function assertStatusOkAndMessageDisplayed($message)
     {
         $this->assertStatusOk();

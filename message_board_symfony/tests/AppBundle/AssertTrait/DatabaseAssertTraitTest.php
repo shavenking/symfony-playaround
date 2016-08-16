@@ -71,16 +71,4 @@ class DatabaseAssertTraitTest extends TestCase
 
         $this->fail();
     }
-
-    protected function createRandomMessage()
-    {
-        $randomName = 'testing_name_' . rand();
-        $randomBody = 'testing_body_' . rand();
-        $message = new Message($randomName, $randomBody);
-
-        $this->em->persist($message);
-        $this->em->flush();
-
-        return $message;
-    }
 }

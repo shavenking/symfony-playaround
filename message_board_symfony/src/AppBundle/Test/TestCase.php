@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TestCase extends WebTestCase
 {
-    use DatabaseAssertTrait, ResponseAssertTrait;
+    use DatabaseAssertTrait, ResponseAssertTrait, EntityTrait;
 
     protected $em;
 

@@ -28,17 +28,17 @@ class MessageAddTagCommandTest extends CommandTestCase
     public function testAddNewTag()
     {
         $message = $this->createRandomMessage();
-        $randomTagName = 'test_tag_name_' . rand();
+        $tag = $this->createRandomTag(false);
 
         // execute command
         $this->mockHelper(QuestionHelper::class)->answers(
             $message->getId(),
-            $randomTagName
+            $tag->getName()
         )->execute();
 
         // see new tag in database
         $tag = $this->em->getRepository('AppBundle:Tag')->findOneBy([
-            'name' => $randomTagName
+            'name' => $tag->getName()
         ]);
         $this->assertNotNull($tag, 'Tag is not created.');
 
@@ -58,32 +58,6 @@ class MessageAddTagCommandTest extends CommandTestCase
         )->execute();
 
         $this->assertMessageTagAssociated($message, $tag);
-    }
-
-    protected function createRandomMessage()
-    {
-        $randomName = 'test_name_' . rand();
-        $randomBody = 'test_body_' . rand();
-
-        $message = new Message($randomName, $randomBody);
-
-        $this->em->persist($message);
-        $this->em->flush();
-
-        return $message;
-    }
-
-    protected function createRandomTag()
-    {
-        $randomName = 'test_name_' . rand();
-
-        $tag = new Tag();
-        $tag->setName($randomName);
-
-        $this->em->persist($tag);
-        $this->em->flush();
-
-        return $tag;
     }
 
     /**

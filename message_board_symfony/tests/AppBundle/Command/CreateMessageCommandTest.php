@@ -24,10 +24,7 @@ class CreateMessageCommandTest extends CommandTestCase
 
     public function testCreateMessage()
     {
-        $message = new Message(
-            'test_name_' . rand(),
-            'test_body_' . rand()
-        );
+        $message = $this->createRandomMessage(false);
 
         // run command
         $this->execute([
