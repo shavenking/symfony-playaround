@@ -2,9 +2,6 @@
 
 namespace AppBundle\Test;
 
-use AppBundle\AssertTrait\DatabaseAssertTrait;
-use AppBundle\AssertTrait\ResponseAssertTrait;
-
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TestCase extends WebTestCase
