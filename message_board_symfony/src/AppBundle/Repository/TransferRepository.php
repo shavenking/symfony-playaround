@@ -32,4 +32,27 @@ class TransferRepository extends \Doctrine\ORM\EntityRepository
 
         return $paginator;
     }
+
+    public function getLatestBalance($user)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $query = $qb->select('partial t.{id, balance}')
+            ->from('AppBundle:Transfer', 't')
+            ->leftJoin('t.user', 'u')
+            ->where($qb->expr()->eq('u.id', $user->getId()))
+            ->orderBy($qb->expr()->desc('t.transferedAt'))
+            ->addOrderBy($qb->expr()->desc('t.id'))
+            ->setMaxResults(1)
+            ->getQuery();
+
+        try {
+            $latestTransfer = $query->getSingleResult();
+        } catch (NoResultException $e) {
+            $latestTransfer = new Transfer;
+            $latestTransfer->setBalance(0);
+        }
+
+        return $latestTransfer->getBalance();
+    }
 }

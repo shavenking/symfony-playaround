@@ -31,4 +31,88 @@ class TransferController extends Controller
 
         return $this->render($viewPath, $renderedData);
     }
+
+    /**
+     * @Route(
+     *     "/deposits",
+     *     name="transfers.deposits.store",
+     *     methods={"POST"}
+     * )
+     */
+    public function storeDepositAction(Request $request)
+    {
+        $amount = $request->get('amount');
+
+        // validate amount
+        // in deposit action, amount has to be positive
+        if ($amount <= 0) {
+            throw new HttpException(403, 'Amount has to be positve.');
+        }
+
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+        $repository = $em->getRepository('AppBundle:Transfer');
+        $latestBalance = $repository->getLatestBalance($user);
+
+        $transfer = new Transfer($amount);
+        $transfer->setUser($user);
+        $transfer->setBalance($latestBalance + $amount);
+
+        $em->persist($transfer);
+        $em->flush();
+
+        $data = [
+            'transfer' => [
+                'id' => $transfer->getId(),
+                'amount' => $transfer->getAmount(),
+                'transfered_at' => $transfer->getTransferedAt()
+            ]
+        ];
+
+        return $this->json([
+            'data' => $data
+        ]);
+    }
+
+    /**
+     * @Route(
+     *     "/withdrawals",
+     *     name="transfers.withdrawals.store",
+     *     methods={"POST"}
+     * )
+     */
+    public function storeWithdrawalAction(Request $request)
+    {
+        $amount = $request->get('amount');
+
+        // validate amount
+        // in withdrawal action, amount has to be negative
+        if ($amount <= 0) {
+            throw new HttpException(403, 'Amount has to be positive.');
+        }
+
+        $user = $this->getUser();
+        $em = $this->getDoctrine()->getManager();
+        $repository = $em->getRepository('AppBundle:Transfer');
+        $latestBalance = $repository->getLatestBalance($user);
+
+        $transfer = new Transfer($amount * -1);
+        $transfer->setUser($user);
+        $transfer->setBalance($latestBalance + $amount * -1);
+
+        $em->persist($transfer);
+        $em->flush();
+
+        $data = [
+            'transfer' => [
+                'id' => $transfer->getId(),
+                'amount' => $transfer->getAmount(),
+                'transfered_at' => $transfer->getTransferedAt()
+            ]
+        ];
+
+        return $this->json([
+            'data' => $data
+        ]);
+    }
 }
