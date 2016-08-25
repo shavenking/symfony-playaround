@@ -2,6 +2,11 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Transfer;
+
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
 /**
  * TransferRepository
  *
@@ -10,4 +15,21 @@ namespace AppBundle\Repository;
  */
 class TransferRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getPaginator($username, $page = 1, $limit = 10)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $dql = $qb->select('t')
+            ->from('AppBundle:Transfer', 't')
+            ->leftJoin('t.user', 'u')
+            ->where($qb->expr()->eq('u.username', '?1'))
+            ->setFirstResult($limit * ($page - 1))
+            ->setMaxResults($limit)
+            ->setParameter(1, $username)
+            ->getQuery();
+
+        $paginator = new Paginator($dql);
+
+        return $paginator;
+    }
 }

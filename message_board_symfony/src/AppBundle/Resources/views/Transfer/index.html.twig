@@ -1,0 +1,38 @@
+{% extends "::base.html.twig" %}
+
+{% set pathInfo = app.getRequest().getPathInfo() %}
+
+{% block title %}Transfers{% endblock %}
+
+{% block body %}
+    <h3>Transfers</h3>
+
+    <table>
+        <tr>
+            <th>Deposit</th>
+            <th>Withdrawal</th>
+            <th>Balance</th>
+            <th>Transfer At</th>
+        </tr>
+        {% for transfer in transfers %}
+            <tr>
+                {% if transfer.getAmount() <= 0 %}
+                    <td></td>
+                    <td>{{ transfer.getAmount() * -1 }}</td>
+                {% endif %}
+                {% if transfer.getAmount() > 0 %}
+                    <td>{{ transfer.getAmount() }}</td>
+                    <td></td>
+                {% endif %}
+                <td>{{ transfer.getBalance() }}</td>
+                <td>{{ transfer.getTransferedAt().format('Y-m-d H:i:s') }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <p>
+        {% for page in firstPage..lastPage %}
+            <a href="{{ path('transfers.index', {page: page, limit: limit}) }}">{{ page }}</a>
+        {% endfor %}
+    </p>
+{% endblock %}
