@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -36,10 +37,17 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Transfer", mappedBy="user")
+     */
+    private $transfers;
+
     public function __construct($username = null, $password = null)
     {
         $this->setUsername($username);
         $this->setPassword($password);
+
+        $this->transfers = new ArrayCollection;
     }
 
     /**
@@ -112,6 +120,18 @@ class User implements UserInterface
 
     public function eraseCredentials()
     {
+    }
+
+    public function getTransfers()
+    {
+        return $this->transfers;
+    }
+
+    public function addTransfer(Transfer $transfer)
+    {
+        $this->transfers->add($transfer);
+
+        return $this;
     }
 }
 
