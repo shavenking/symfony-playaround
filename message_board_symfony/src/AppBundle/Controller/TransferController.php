@@ -101,7 +101,6 @@ class TransferController extends Controller
      */
     public function storeWithdrawalAction(Request $request)
     {
-        $this->get('logger')->info($request->getContent());
         $data = json_decode($request->getContent(), true);
 
         if (is_null($data)) {
