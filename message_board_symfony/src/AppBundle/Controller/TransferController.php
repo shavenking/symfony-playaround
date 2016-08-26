@@ -29,6 +29,18 @@ class TransferController extends Controller
         $lastPage = ceil($transfers->count() / $limit);
         $renderedData = compact('transfers', 'firstPage', 'lastPage', 'limit');
 
+        if ($request->headers->contains('content-type', 'application/json')) {
+            return $this->json([
+                'data' => $transfers->getIterator(),
+                'meta' => [
+                    'firstPage' => $firstPage,
+                    'lastPage' => $lastPage,
+                    'limit' => $limit,
+                    'count' => $transfers->count()
+                ]
+            ]);
+        }
+
         return $this->render($viewPath, $renderedData);
     }
 

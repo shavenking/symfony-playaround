@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
+use JsonSerializable;
 
 /**
  * Transfer
@@ -11,7 +12,7 @@ use DateTime;
  * @ORM\Table(name="transfers")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\TransferRepository")
  */
-class Transfer
+class Transfer implements JsonSerializable
 {
     /**
      * @var int
@@ -150,6 +151,15 @@ class Transfer
     public function getTransferedAt()
     {
         return $this->transferedAt;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'amount' => $this->getAmount(),
+            'transferedAt' => $this->getTransferedAt()
+        ];
     }
 }
 
