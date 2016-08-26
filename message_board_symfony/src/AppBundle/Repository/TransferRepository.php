@@ -33,7 +33,7 @@ class TransferRepository extends \Doctrine\ORM\EntityRepository
         return $paginator;
     }
 
-    public function getLatestBalance($user)
+    public function getLatestBalance($user, $lock = false)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
@@ -45,6 +45,10 @@ class TransferRepository extends \Doctrine\ORM\EntityRepository
             ->addOrderBy($qb->expr()->desc('t.id'))
             ->setMaxResults(1)
             ->getQuery();
+
+        if ($lock) {
+            $query->setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
+        }
 
         try {
             $latestTransfer = $query->getSingleResult();

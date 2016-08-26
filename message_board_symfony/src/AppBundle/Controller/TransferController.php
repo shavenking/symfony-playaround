@@ -69,15 +69,17 @@ class TransferController extends Controller
 
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
-        $repository = $em->getRepository('AppBundle:Transfer');
-        $latestBalance = $repository->getLatestBalance($user);
-
         $transfer = new Transfer($amount);
-        $transfer->setUser($user);
-        $transfer->setBalance($latestBalance + $amount);
 
-        $em->persist($transfer);
-        $em->flush();
+        $em->transactional(function ($em) use ($user, $amount, $transfer) {
+            $repository = $em->getRepository('AppBundle:Transfer');
+            $latestBalance = $repository->getLatestBalance($user, $lock = true);
+
+            $transfer->setUser($user);
+            $transfer->setBalance($latestBalance + $amount);
+
+            $em->persist($transfer);
+        });
 
         $data = [
             'transfer' => [
@@ -117,15 +119,18 @@ class TransferController extends Controller
 
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
-        $repository = $em->getRepository('AppBundle:Transfer');
-        $latestBalance = $repository->getLatestBalance($user);
+        $amount *= -1;
+        $transfer = new Transfer($amount);
 
-        $transfer = new Transfer($amount * -1);
-        $transfer->setUser($user);
-        $transfer->setBalance($latestBalance + $amount * -1);
+        $em->transactional(function ($em) use ($user, $amount, $transfer) {
+            $repository = $em->getRepository('AppBundle:Transfer');
+            $latestBalance = $repository->getLatestBalance($user, $lock = true);
 
-        $em->persist($transfer);
-        $em->flush();
+            $transfer->setUser($user);
+            $transfer->setBalance($latestBalance + $amount);
+
+            $em->persist($transfer);
+        });
 
         $data = [
             'transfer' => [
