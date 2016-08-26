@@ -41,7 +41,13 @@ class TransferController extends Controller
      */
     public function storeDepositAction(Request $request)
     {
-        $amount = $request->get('amount');
+        $data = json_decode($request->getContent(), true);
+
+        if (is_null($data)) {
+            throw new HttpException(400);
+        }
+
+        $amount = $data['amount'];
 
         // validate amount
         // in deposit action, amount has to be positive
@@ -83,7 +89,14 @@ class TransferController extends Controller
      */
     public function storeWithdrawalAction(Request $request)
     {
-        $amount = $request->get('amount');
+        $this->get('logger')->info($request->getContent());
+        $data = json_decode($request->getContent(), true);
+
+        if (is_null($data)) {
+            throw new HttpException(400);
+        }
+
+        $amount = $data['amount'];
 
         // validate amount
         // in withdrawal action, amount has to be negative

@@ -71,12 +71,36 @@ class TransferControllerTest extends TestCase
 
     protected function hitDeposit($data, $credentials)
     {
-        return $this->client->request('POST', '/deposits', $data, [], $credentials);
+        $server = array_merge($credentials, [
+            'CONTENT-TYPE' => 'application/json'
+        ]);
+        $content = json_encode($data);
+
+        return $this->client->request(
+            'POST',
+            '/deposits',
+            $params = [],
+            $files = [],
+            $server,
+            $content
+        );
     }
 
     protected function hitWithdrawal($data, $credentials)
     {
-        return $this->client->request('POST', '/withdrawals', $data, [], $credentials);
+        $server = array_merge($credentials, [
+            'CONTENT-TYPE' => 'application/json'
+        ]);
+        $content = json_encode($data);
+
+        return $this->client->request(
+            'POST',
+            '/withdrawals',
+            $params = [],
+            $files = [],
+            $server,
+            $content
+        );
     }
 
     protected function getCredentials()
