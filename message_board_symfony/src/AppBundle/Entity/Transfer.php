@@ -156,7 +156,7 @@ class Transfer implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->getId(),
+            'id' => (string) $this->getId(),
             'amount' => $this->getAmount(),
             'transferedAt' => $this->getTransferedAt()
         ];
