@@ -4,7 +4,6 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\Transfer;
 
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -31,32 +30,5 @@ class TransferRepository extends \Doctrine\ORM\EntityRepository
         $paginator = new Paginator($dql);
 
         return $paginator;
-    }
-
-    public function getLatestBalance($user, $lock = false)
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $query = $qb->select('partial t.{id, balance}')
-            ->from('AppBundle:Transfer', 't')
-            ->leftJoin('t.user', 'u')
-            ->where($qb->expr()->eq('u.id', $user->getId()))
-            ->orderBy($qb->expr()->desc('t.transferedAt'))
-            ->addOrderBy($qb->expr()->desc('t.id'))
-            ->setMaxResults(1)
-            ->getQuery();
-
-        if ($lock) {
-            $query->setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
-        }
-
-        try {
-            $latestTransfer = $query->getSingleResult();
-        } catch (NoResultException $e) {
-            $latestTransfer = new Transfer;
-            $latestTransfer->setBalance(0);
-        }
-
-        return $latestTransfer->getBalance();
     }
 }

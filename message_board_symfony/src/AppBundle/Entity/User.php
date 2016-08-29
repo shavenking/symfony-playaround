@@ -38,6 +38,11 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @ORM\Column(name="balance", type="integer")
+     */
+    private $balance;
+
+    /**
      * @ORM\OneToMany(targetEntity="Transfer", mappedBy="user")
      */
     private $transfers;
@@ -46,6 +51,7 @@ class User implements UserInterface
     {
         $this->setUsername($username);
         $this->setPassword($password);
+        $this->setBalance(0);
 
         $this->transfers = new ArrayCollection;
     }
@@ -132,6 +138,18 @@ class User implements UserInterface
         $this->transfers->add($transfer);
 
         return $this;
+    }
+
+    public function setBalance($balance)
+    {
+        $this->balance = $balance;
+
+        return $this;
+    }
+
+    public function getBalance()
+    {
+        return $this->balance;
     }
 }
 

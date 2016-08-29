@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Transfer;
 
+use Doctrine\DBAL\LockMode;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -115,25 +116,23 @@ class TransferController extends Controller
     protected function persistTransfer($user, $amount)
     {
         $em = $this->getDoctrine()->getManager();
-        $repository = $em->getRepository('AppBundle:Transfer');
 
         $transfer = new Transfer;
 
         // start transactional and
-        // lock the latest balance
+        // lock the user's balance
         $em->transactional(function ($em) use (
             $user,
             $amount,
-            $transfer,
-            $repository
+            $transfer
         ) {
-            $latestBalance = $repository->getLatestBalance($user, $lock = true);
+            $em->find('AppBundle:User', $user, LockMode::PESSIMISTIC_WRITE);
 
             $transfer->setAmount($amount);
             $transfer->setUser($user);
-            $transfer->setBalance($latestBalance + $amount);
-
             $em->persist($transfer);
+
+            $user->setBalance($amount + $user->getBalance());
         });
 
         return $transfer;

@@ -38,13 +38,6 @@ class Transfer implements JsonSerializable
     private $amount;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="balance", type="integer")
-     */
-    private $balance;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="transfered_at", type="datetime")
@@ -103,30 +96,6 @@ class Transfer implements JsonSerializable
     public function getAmount()
     {
         return $this->amount;
-    }
-
-    /**
-     * Set balance
-     *
-     * @param integer $balance
-     *
-     * @return Transfer
-     */
-    public function setBalance($balance)
-    {
-        $this->balance = $balance;
-
-        return $this;
-    }
-
-    /**
-     * Get balance
-     *
-     * @return int
-     */
-    public function getBalance()
-    {
-        return $this->balance;
     }
 
     /**
