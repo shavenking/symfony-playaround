@@ -56,7 +56,9 @@ class TransferController extends Controller
 
     /**
      * @Route(
-     *     "/deposits",
+     *     "/deposits.{_format}",
+     *     defaults={"_format": "json"},
+     *     requirements={"_format": "json"},
      *     name="transfers.deposits.store",
      *     methods={"POST"}
      * )
@@ -74,7 +76,9 @@ class TransferController extends Controller
 
     /**
      * @Route(
-     *     "/withdrawals",
+     *     "/withdrawals.{_format}",
+     *     defaults={"_format": "json"},
+     *     requirements={"_format": "json"},
      *     name="transfers.withdrawals.store",
      *     methods={"POST"}
      * )
