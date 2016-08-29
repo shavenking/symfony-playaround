@@ -42,6 +42,7 @@ class TransferController extends Controller
                 'meta' => [
                     'firstPage' => $firstPage,
                     'lastPage' => $lastPage,
+                    'page' => $page,
                     'limit' => $limit,
                     'count' => $transfers->count()
                 ]
