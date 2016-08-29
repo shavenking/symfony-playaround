@@ -12,9 +12,15 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class TransferController extends Controller
 {
     /**
-     * @Route("/transfers", name="transfers.index", methods={"GET"})
+     * @Route(
+     *     "/transfers.{_format}",
+     *     defaults={"_format": "html"},
+     *     requirements={"_format": "html|json"},
+     *     name="transfers.index",
+     *     methods={"GET"}
+     * )
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $_format)
     {
         $username = $this->getUser()->getUsername();
         $page = $request->get('page', 1);
@@ -30,7 +36,7 @@ class TransferController extends Controller
         $lastPage = ceil($transfers->count() / $limit);
 
         // response json data if requested
-        if ($request->headers->contains('content-type', 'application/json')) {
+        if ('json' === $_format) {
             return $this->json([
                 'data' => $transfers->getIterator(),
                 'meta' => [
