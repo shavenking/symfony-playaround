@@ -14,3 +14,10 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+liip_functional_test: ~
+
+doctrine:
+    dbal:
+        driver: pdo_sqlite
+        path: "%kernel.cache_dir%/test.db"
