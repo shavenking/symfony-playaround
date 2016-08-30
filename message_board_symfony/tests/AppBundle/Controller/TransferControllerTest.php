@@ -2,123 +2,132 @@
 
 namespace Tests\AppBundle\Controller;
 
+use AppBundle\DataFixtures\ORM\LoadTransferData;
+use AppBundle\DataFixtures\ORM\LoadUserData;
 use AppBundle\Entity\Transfer;
 use AppBundle\Test\TestCase;
 
-class TransferControllerTest extends TestCase
+use Liip\FunctionalTestBundle\Test\WebTestCase;
+
+class TransferControllerTest extends WebTestCase
 {
+    protected function setUp()
+    {
+        $this->loadFixtures([
+            LoadUserData::class
+        ]);
+    }
+
     public function testIndexReachable()
     {
-        $credentials = $this->getCredentials();
+        $client = static::makeClient($this->getCredentials());
 
-        $this->client->request('GET', '/transfers', [], [], $credentials);
-        $this->assertStatusOk();
+        $client->request('GET', '/transfers.json');
+        $this->assertStatusCode(200, $client);
+
+        $client->request('GET', '/transfers');
+        $this->assertStatusCode(200, $client);
     }
 
-    public function testTransfersPaginated()
+    public function testTransfersPaginatable()
     {
-        $credentials = $this->getCredentials();
-        $repository = $this->em->getRepository('AppBundle:Transfer');
+        $this->loadFixtures([LoadTransferData::class]);
 
-        $transfers = $repository->getPaginator($credentials['PHP_AUTH_USER']);
-        $crawler = $this->hitIndex([], $credentials);
-        $this->assertLessThanOrEqual(
-            $transfers->count(),
-            $crawler->filter('tr')->count() - 1
+        $credentials = $this->getCredentials();
+
+        // limit 2
+        $content = json_decode(
+            $this->fetchContent('/transfers.json?limit=2', 'GET', $credentials),
+            true
         );
+        $this->assertSame(2, count($content['data']));
 
-        $crawler = $this->hitIndex(['limit' => 2], $credentials);
-        $this->assertLessThanOrEqual(
-            2,
-            $crawler->filter('tr')->count() - 1
+        // limit 4
+        $content = json_decode(
+            $this->fetchContent('/transfers.json?limit=4', 'GET', $credentials),
+            true
         );
+        $this->assertSame(4, count($content['data']));
     }
 
-    public function testStoreDeposit()
+    public function testStoreTransfer()
     {
-        $data = $this->getRandomData();
-        $credentials = $this->getCredentials();
+        $amount = rand(1, 999);
+        $data = json_encode(compact('amount'));
+        $client = static::makeClient($this->getCredentials());
 
-        $this->hitDeposit($data, $credentials);
-        $this->assertStatusOk();
+        // deposit
+        $this->hitDeposit($client, $data);
+        $content = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertStatusCode(200, $client);
+        $this->assertSame($amount, $content['data']['amount']);
+
+        // withdrawal
+        $this->hitWithdrawal($client, $data);
+        $content = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertStatusCode(200, $client);
+        $this->assertSame($amount * -1, $content['data']['amount']);
     }
 
-    public function testStoreWithdrawal()
+    public function testTransferFailureAmount()
     {
-        $data = $this->getRandomData();
-        $credentials = $this->getCredentials();
+        $data = json_encode(['amount' => -1]);
+        $client = static::makeClient($this->getCredentials());
 
-        $this->hitWithdrawal($data, $credentials);
-        $this->assertStatusOk();
+        // deposit
+        $this->hitDeposit($client, $data);
+        $this->assertStatusCode(403, $client);
+
+        // withdrawal
+        $this->hitWithdrawal($client, $data);
+        $this->assertStatusCode(403, $client);
     }
 
-    public function testFailureAmount()
+    public function testNotJsonRequest()
     {
-        $data = $this->getFailureData();
-        $credentials = $this->getCredentials();
+        $data = 'amount=1';
+        $client = static::makeClient($this->getCredentials());
 
-        $this->hitDeposit($data, $credentials);
-        $this->assertStatusCodeEquals(403);
+        // deposit
+        $this->hitDeposit($client, $data);
+        $this->assertStatusCode(400, $client);
 
-        $this->hitWithdrawal($data, $credentials);
-        $this->assertStatusCodeEquals(403);
-    }
-
-    protected function hitIndex($data = [], $credentials)
-    {
-        return $this->client->request('GET', '/transfers', $data, [], $credentials);
-    }
-
-    protected function hitDeposit($data, $credentials)
-    {
-        $server = array_merge($credentials, [
-            'CONTENT-TYPE' => 'application/json'
-        ]);
-        $content = json_encode($data);
-
-        return $this->client->request(
-            'POST',
-            '/deposits',
-            $params = [],
-            $files = [],
-            $server,
-            $content
-        );
-    }
-
-    protected function hitWithdrawal($data, $credentials)
-    {
-        $server = array_merge($credentials, [
-            'CONTENT-TYPE' => 'application/json'
-        ]);
-        $content = json_encode($data);
-
-        return $this->client->request(
-            'POST',
-            '/withdrawals',
-            $params = [],
-            $files = [],
-            $server,
-            $content
-        );
+        // withdrawal
+        $this->hitWithdrawal($client, $data);
+        $this->assertStatusCode(400, $client);
     }
 
     protected function getCredentials()
     {
         return [
-            'PHP_AUTH_USER' => 'hugh',
-            'PHP_AUTH_PW' => 'hugh'
+            'username' => 'hugh',
+            'password' => 'hugh'
         ];
     }
 
-    protected function getRandomData()
+    protected function hitDeposit($client, $data = [])
     {
-        return ['amount' => rand(1, 9999)];
+        $client->request(
+            'POST',
+            '/deposits',
+            $params = [],
+            $files = [],
+            $server = [],
+            $data
+        );
     }
 
-    // amount can NOT be negative integer
-    protected function getFailureData()
+    protected function hitWithdrawal($client, $data = [])
     {
-        return ['amount' => -1];
+        $client->request(
+            'POST',
+            '/withdrawals',
+            $params = [],
+            $files = [],
+            $server = [],
+            $data
+        );
     }
 }
