@@ -2,7 +2,9 @@
 
 namespace AppBundle\Test;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use AppBundle\DataFixtures\ORM\LoadUserData;
+
+use Liip\FunctionalTestBundle\Test\WebTestCase;
 
 class TestCase extends WebTestCase
 {
@@ -16,7 +18,9 @@ class TestCase extends WebTestCase
     {
         parent::setUp();
 
-        $this->client = $this->createClient();
+        $this->loadFixtures([LoadUserData::class]);
+
+        $this->client = static::makeClient($this->getCredentials());
         $this->em = $this->client
             ->getContainer()
             ->get('doctrine.orm.entity_manager');
@@ -31,5 +35,10 @@ class TestCase extends WebTestCase
 
         $this->client = null;
         $this->em = null;
+    }
+
+    protected function getCredentials()
+    {
+        return ['username' => 'hugh', 'password' => 'hugh'];
     }
 }
