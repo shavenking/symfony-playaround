@@ -41,20 +41,32 @@ class CreateMessageCommand extends ContainerAwareCommand
         // get arguments
         $displayName = $input->getArgument('displayName');
         $msgBody = $input->getArgument('msgBody');
-
-        // set Message
-        $message = new Message;
-        $message->setDisplayName($displayName);
-        $message->setBody($msgBody);
-
-        // persist Message
         $em = $this->getContainer()->get('doctrine')->getManager();
-        $em->persist($message);
-        $em->flush();
+        $batch = 1000;
+        $flushTimeCollection = [];
 
-        // tell user that Message is created
-        $output->writeln('Message Created.');
-        $output->writeln("Display Name: $displayName");
-        $output->writeln("Message Body: $msgBody");
+        $time = -microtime(true);
+        foreach (range(1, 100000) as $i) {
+            // set Message
+            $message = new Message;
+            $message->setDisplayName($displayName);
+            $message->setBody($msgBody);
+
+            // persist Message
+            $em->persist($message);
+
+            if (!($i % $batch)) {
+                $flushTime = -microtime(true);
+                $em->flush();
+                $flushTimeCollection[] = ($flushTime += microtime(true));
+                $em->clear();
+            }
+        }
+        $flushTime = -microtime(true);
+        $em->flush();
+        $flushTimeCollection[] = ($flushTime += microtime(true));
+        $output->writeln('Memory: ' . memory_get_usage(true) / (1024 * 1024) . ' M');
+        $output->writeln('Total Time: ' . $time += microtime(true));
+        $output->writeln('Avg Flush Time: ' . array_sum($flushTimeCollection) / count($flushTimeCollection));
     }
 }
